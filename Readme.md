@@ -26,6 +26,13 @@ It's highly recommended to follow the notes to keep it standardized for easier m
 * `.gitignore` - list of files should be ignored by git, so temporary files wont be included in commits.
 * `jtag.cdf` - it will be produced when you compile the core. By clicking it in Quartus IDE, you will launch programmer where you can send the core to MiSTer over USB blaster cable (see manual for DE10-nano how to connect it). This file normally is not present on cleaned project and not included in commits.
 
+### Menu module (optional):
+`menu` holds the core's menu module (`<core_name>.mnu`): a shared object Main_MiSTer loads with the core when `menu_module=1` is set in `MiSTer.ini`, and which replaces the core's main OSD menu (the one built from `CONF_STR`). A core without one keeps the stock menu, so the folder can be deleted if it is not needed.
+* `menu/template.cpp` - the module's source, a working example to start from; it talks to Main only through `mnu_api.h`.
+* `menu/Makefile` - set `MNU_NAME` to the core's name and point `MAIN_MISTER` at a Main_MiSTer checkout (its `mnu_module.mk` holds the build rules). `make` builds `menu/<core_name>.mnu`, `make deploy` copies it next to the rbf on the MiSTer, `make reload` makes the running MiSTer load it again.
+
+The module is found by the rbf's name: `<core_name>_<date>.rbf` loads `<core_name>_<date>.mnu`, or `<core_name>.mnu` for every date. The core browser shows a `*` after the date of a core that will load one, a module's OSD title ends in `*`, and F9 switches between the module and the stock `CONF_STR` menu (unloading and reloading the module).
+
 ### PLL:
 Framework implies use of at least one PLL in the core. Framework doesn't contain this PLL but requires it to be placed in `rtl` folder, so `pll` folder and `pll.v`, `pll.qip` files must be present, however PLL settings are up to the core.
 
